@@ -10,7 +10,7 @@ router.get("/", (req,res) => {
     res.render("index");
 });
 
-app.get("/scrape", (req, res) => {
+router.get("/scrape", (req, res) => {
     axios.get("http://www.echojs.com/").then(function (response) {
         var $ = cheerio.load(response.data);
 
@@ -21,7 +21,7 @@ app.get("/scrape", (req, res) => {
                 .children("a")
                 .text();
 
-            result.link = $(this)
+            result.link = $(this) 
                 .children("a")
                 .attr("href");
 
@@ -37,7 +37,7 @@ app.get("/scrape", (req, res) => {
     });
 });
 
-app.get("/articles", function (req, res) {
+router.get("/articles", function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
             res.json(dbArticle);
@@ -48,9 +48,9 @@ app.get("/articles", function (req, res) {
         });
 });
 
-app.get("/articles/:id", function (req, res) {
+router.get("/articles/:id", function (req, res) {
     db.Article.findOne({ _id: req.params.id })
-        .populate("note")
+        .populate("article")
         .then(function (dbArticle) {
             res.json(dbArticle);
         })
@@ -60,10 +60,10 @@ app.get("/articles/:id", function (req, res) {
         });
 });
 
-app.post("/articles/:id", function (req, res) {
-    db.Note.create(req.body)
-        .then(function (dbNote) {
-            return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+router.post("/articles/:id", function (req, res) {
+    db.Article.create(req.body)
+        .then(function (dbArticle) {
+            return db.Article.findOneAndUpdate({ _id: req.params.id }, { article: dbArticle._id }, { new: true });
         })
 
         .then(function (dbArticle) {
