@@ -6,34 +6,39 @@ const cheerio = require("cheerio");
 
 const db = require("../models/index");
 
-router.get("/", (req,res) => {
+router.get("/", (req, res) => {
     res.render("index");
 });
 
 router.get("/scrape", (req, res) => {
     axios.get("http://www.echojs.com/").then(function (response) {
         var $ = cheerio.load(response.data);
-
-        $("article h2").each(function (i, element) {
-            var result = {};
-
-            result.title = $(this)
-                .children("a")
+        var result = [];
+        $("article").each(function (i, element) {
+           
+            var scrapedData = {}
+            scrapedData.title = $(element)
+                .find("h2")
                 .text();
 
-            result.link = $(this) 
-                .children("a")
+            scrapedData.link = $(element)
+                .find("h2")
+                .find("a")
                 .attr("href");
-
-            db.Article.create(result)
+            result.push(scrapedData);
+            db.Article.create(scrapedData)
                 .then(function (dbArticle) {
                     console.log(dbArticle);
                 })
                 .catch(function (err) {
                     console.log(err);
                 });
+            
         });
-        res.send("Scrape Complete");
+        
+        
+        
+        res.json(result);
     });
 });
 

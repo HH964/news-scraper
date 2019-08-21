@@ -6,14 +6,6 @@ const ArticleSchema = new Schema ({
         type: String,
         required: true
     },
-    desciption:{
-        type: String,
-        unique: true
-    },
-    comment:{
-        type: Schema.Types.ObjectId,
-        ref: "Comment"
-    },
     link:{
         type: String,
         required: true
